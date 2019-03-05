@@ -1,0 +1,109 @@
+#include <stdio.h>
+
+struct list
+{
+	int e;
+	list *next;
+};
+
+unsigned n;
+
+void input(list **head, list **head1, list **head2, FILE *in)
+{
+	fscanf_s(in, "%u", &n);
+	*head = new list;
+	*head1 = new list;
+	*head2 = new list;
+	list *r = *head;
+	list *q = *head1;
+	list *p = *head2;
+	for (unsigned i = n+1; i; i--)
+	{
+		r->next = new list;
+		q->next = new list;
+		p->next = new list;
+		r = r->next;
+		q = q->next;
+		p = p->next;
+		if (i == 2)
+		{
+			q->e = 1;
+			p->e = 0;
+			r->e = 1;
+		}
+		else if (i == 1)
+		{
+			q->e = 0;
+			p->e = 1;
+			r->e = 0;
+		}
+		else
+		{
+			q->e = 0;
+			p->e = 0;
+			r->e = 0;
+		}
+	}
+	r->next = NULL;
+	q->next = NULL;
+	p->next = NULL;
+}
+
+void output(list *head, FILE *out)
+{
+	for (list *r = head->next; r; r = r->next)
+		fprintf_s(out,"%d ", r->e);
+}
+
+void pow_up(list **head)
+{
+	list *cur, *next;
+	for (list *r = *head; r->next->next; r = r->next)
+	{
+		cur = r->next;
+		next = cur->next;
+		r->next = next;
+		cur->next = next->next;
+		next->next = cur;
+	}
+}
+
+void minus(list **head, list **head1, list **head2)
+{
+	list *r = (*head);
+	list *q = (*head1);
+	list *p = (*head2);
+	while(r->next)
+	{
+		r = r->next;
+		p = p->next;
+		p->e = 2*r->e - p->e;
+		r->e = p->e;
+	}
+}
+
+int main()
+{
+	FILE *in, *out;
+	list *head;
+	list *head1;
+	list *head2;
+
+	fopen_s(&in, "input.txt","r");
+	input(&head, &head1, &head2, in);
+	fclose(in);
+
+	for (unsigned i = n - 1; i; i--)
+	{
+		pow_up(&head);
+		minus(&head, &head1, &head2);
+		list *c = head1->next;
+		head1->next = head2->next;
+		head2->next = c;
+	}
+
+	fopen_s(&out, "output.txt", "w");
+	output(head, out);
+	fclose(in);
+	return 0;
+}
